@@ -33,7 +33,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "bsuir.ksis.angieapp"
-        minSdkVersion 23
+        minSdkVersion 22
         targetSdkVersion 23
         versionCode getVersionCode()
         versionName getVersionName()
