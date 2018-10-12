@@ -38,6 +38,7 @@ android {
         versionCode getVersionCode()
         versionName getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        setProperty("archivesBaseName", "$applicationId-$versionName")
     }
     buildTypes {
         release {

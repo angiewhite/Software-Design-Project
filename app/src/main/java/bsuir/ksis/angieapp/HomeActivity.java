@@ -17,7 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.support.design.widget.Snackbar;
 
-public class MainActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
 
     private static final int REQUEST_READ_PHONE_STATE = 78;
 
