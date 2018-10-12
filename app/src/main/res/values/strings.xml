@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">AngieApp</string>
+    <string name="version_fail">Failed to retrieve the version</string>
+    <string name="unknown">Unknown</string>
+    <string name="IMEI">IMEI: %1$s</string>
+    <string name="app_version">v%1$s</string>
+    <string name="imei_fail">No permission to read IMEI</string>
+    <string name="snackbar_action">GRANT</string>
 </resources>

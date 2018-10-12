@@ -1,64 +1,113 @@
 package bsuir.ksis.angieapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
+import android.support.design.widget.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int REQUEST_READ_PHONE_STATE = 78;
+
+    private boolean wasStopped = false;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView imei_tv = findViewById(R.id.imei_text_view);
+        TextView version_tv = findViewById(R.id.version_text_view);
+
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String version = pInfo.versionName;
+            version_tv.setText(getString(R.string.app_version, version));
+        } catch (PackageManager.NameNotFoundException e) {
+            version_tv.setText(getString(R.string.version_fail));
+        }
 
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            requestReadPhoneStatePermission();
+        } else {
+            tryShowIMEI();
+        }
+    }
+
+    protected void onStop() {
+        super.onStop();
+
+        wasStopped = true;
+    }
+
+    protected void onResume() {
+        super.onResume();
+
+        if (!wasStopped) return;
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            requestReadPhoneStatePermission();
+        } else {
+            tryShowIMEI();
+        }
+    }
+
+    private void requestReadPhoneStatePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_PHONE_STATE)) {
+            String message = "Give Phone permission to the app to enable IMEI display functionality.";
+            final Activity currentActivity = this;
+            Snackbar.make(findViewById(R.id.parent_container), message, Snackbar.LENGTH_INDEFINITE)
+            .setAction(R.string.snackbar_action, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ActivityCompat.requestPermissions(currentActivity,
+                            new String[]{Manifest.permission.READ_PHONE_STATE},
+                            REQUEST_READ_PHONE_STATE);
+                }
+            }).show();
+        } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_PHONE_STATE},
-                    1);
-        } else {
-            TelephonyManager manager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+                    REQUEST_READ_PHONE_STATE);
+        }
+    }
+
+    private void tryShowIMEI() {
+        TextView imei_tv = findViewById(R.id.imei_text_view);
+        TelephonyManager manager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        try {
             String imei = manager.getDeviceId();
-            imei_tv.setText(imei);
+            imei_tv.setText(imei == null ? getString(R.string.IMEI, getString(R.string.unknown)) :
+                    getString(R.string.IMEI, imei));
+        } catch (SecurityException e) {
+            throw e;
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        TextView imei_tv = findViewById(R.id.imei_text_view);
         switch (requestCode) {
-            case 1: {
-                // If request is cancelled, the result arrays are empty.
+            case REQUEST_READ_PHONE_STATE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    TelephonyManager manager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-                    try {
-                        String imei = manager.getDeviceId();
-                        imei_tv.setText(imei);
-                    } catch (SecurityException e) {
-
-                    }
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+                    tryShowIMEI();
                 } else {
-                    imei_tv.setText("You didn't let me fetch the imei :(");
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    TextView imei_tv = findViewById(R.id.imei_text_view);
+                    imei_tv.setText(getString(R.string.imei_fail));
                 }
-                return;
+                break;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 }
