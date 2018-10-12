@@ -39,12 +39,31 @@ android {
         versionCode getVersionCode()
         versionName getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "$applicationId-$versionName")
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    def versionNameSuffix = variant.productFlavors[0].versionNameSuffix
+                    def apkName = "${defaultConfig.applicationId}-${defaultConfig.versionName}" +
+                            "${versionNameSuffix}.apk"
+                    outputFileName = apkName
+                }
+            }
+        }
+    }
+
+    flavorDimensions "version"
+    productFlavors {
+        development {
+            manifestPlaceholders = [orientationPreference: "unspecified"]
+            versionNameSuffix = "-dev"
+        }
+        primary {
+            manifestPlaceholders = [orientationPreference: "portrait"]
+            versionNameSuffix = ""
         }
     }
 }
