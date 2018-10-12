@@ -12,6 +12,7 @@ def getVersionName = { ->
             standardOutput = stdout
         }
         String result = stdout.toString().trim()
+        if (result.indexOf('-') == -1) return result + ".0"
         return result.substring(0, result.indexOf('-')) + "." +
                 result.substring(result.indexOf('-') + 1, result.lastIndexOf('-'))
     }
