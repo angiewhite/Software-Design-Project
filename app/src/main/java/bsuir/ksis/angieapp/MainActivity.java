@@ -3,8 +3,11 @@ package bsuir.ksis.angieapp;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         if (!wasStopped) return;
+        wasStopped = false;
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -94,6 +98,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void openSettingsForPhoneStatePermission(){
+        Intent appSettingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", getPackageName(), null));
+        startActivityForResult(appSettingsIntent, REQUEST_READ_PHONE_STATE);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -105,6 +115,18 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     TextView imei_tv = findViewById(R.id.imei_text_view);
                     imei_tv.setText(getString(R.string.imei_fail));
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.READ_PHONE_STATE)) {
+                        String message = "You can grant the permission later in app settings (Permissions section)";
+                        Snackbar.make(findViewById(R.id.parent_container), message, Snackbar.LENGTH_LONG)
+                                .setAction("SETTINGS", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        openSettingsForPhoneStatePermission();
+                                    }
+                                })
+                                .show();
+                    }
                 }
                 break;
             }
