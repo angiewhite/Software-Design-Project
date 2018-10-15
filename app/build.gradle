@@ -58,9 +58,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationVariants.all { variant ->
                 variant.outputs.all {
-                    def versionNameSuffix = variant.productFlavors[0].versionNameSuffix
-                    def apkName = "${defaultConfig.applicationId}-${defaultConfig.versionName}" +
-                            "${versionNameSuffix}.apk"
+                    def apkName = "${applicationId}-${versionName}" +
+                            ".apk"
                     outputFileName = apkName
                 }
             }

@@ -1,10 +1,8 @@
 package bsuir.ksis.angieapp;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
@@ -29,13 +27,7 @@ public class HomeActivity extends AppCompatActivity {
 
         TextView version_tv = findViewById(R.id.version_text_view);
 
-        try {
-            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            String version = pInfo.versionName;
-            version_tv.setText(getString(R.string.app_version, version));
-        } catch (PackageManager.NameNotFoundException e) {
-            version_tv.setText(getString(R.string.version_fail));
-        }
+        version_tv.setText(BuildConfig.VERSION_NAME);
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -69,12 +61,11 @@ public class HomeActivity extends AppCompatActivity {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.READ_PHONE_STATE)) {
             String message = "Give Phone permission to the app to enable IMEI display functionality.";
-            final Activity currentActivity = this;
             Snackbar.make(findViewById(R.id.parent_container), message, Snackbar.LENGTH_INDEFINITE)
             .setAction(R.string.snackbar_action, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ActivityCompat.requestPermissions(currentActivity,
+                    ActivityCompat.requestPermissions(HomeActivity.this,
                             new String[]{Manifest.permission.READ_PHONE_STATE},
                             REQUEST_READ_PHONE_STATE);
                 }
