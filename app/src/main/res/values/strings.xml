@@ -6,4 +6,7 @@
     <string name="app_version">v%1$s</string>
     <string name="imei_fail">No permission to read IMEI</string>
     <string name="snackbar_action">GRANT</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
