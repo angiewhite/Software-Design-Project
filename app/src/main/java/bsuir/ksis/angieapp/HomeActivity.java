@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -63,6 +64,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupActionBar(NavController navController)
     {
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         NavigationUI.setupActionBarWithNavController(this, navController);
     }
 
@@ -77,6 +79,13 @@ public class HomeActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.fragment);
         boolean navigated = NavigationUI.onNavDestinationSelected(item, navController);
         return navigated || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.fragment);
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        return NavigationUI.navigateUp(navController, drawerLayout);
     }
 
     //    protected void onStop() {
