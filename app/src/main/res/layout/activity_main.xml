@@ -14,39 +14,6 @@
         android:background="?colorPrimary"
         android:theme="@style/ToolbarTheme" />
 
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/parent_container"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="vertical"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent">-->
-        <!--<TextView-->
-            <!--android:id="@+id/version_text_view"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text=""/>-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/imei_text_view"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="" />-->
-
-        <!--<fragment-->
-            <!--android:id="@+id/fragment"-->
-            <!--android:name="androidx.navigation.fragment.NavHostFragment"-->
-            <!--android:layout_width="368dp"-->
-            <!--android:layout_height="221dp"-->
-            <!--app:defaultNavHost="true"-->
-            <!--app:navGraph="@navigation/nav_graph"-->
-            <!--tools:layout_editor_absoluteX="8dp"-->
-            <!--tools:layout_editor_absoluteY="282dp" />-->
-    <!--</LinearLayout>-->
-
     <fragment
         android:id="@+id/fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -60,7 +27,6 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/menu_navigation"/>
+        android:layout_height="wrap_content"        app:menu="@menu/menu_navigation"/>
 
 </LinearLayout>

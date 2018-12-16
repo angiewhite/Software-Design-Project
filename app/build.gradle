@@ -88,7 +88,7 @@ dependencies {
 
     def nav_version = "1.0.0-alpha08"
 
-    implementation "android.arch.navigation:navigation-fragment:$nav_version" // use -ktx for Kotlin
+    implementation "android.arch.navigation:navigation-fragment:$nav_version"
     implementation "android.arch.navigation:navigation-ui:$nav_version"
 
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
