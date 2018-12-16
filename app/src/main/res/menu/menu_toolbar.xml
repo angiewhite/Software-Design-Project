@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/destination_home"
+        android:id="@+id/destination_about"
         android:icon="@drawable/ic_launcher_background"
-        android:title="Home" />
-    <item
-        android:id="@+id/destination_spare"
-        android:icon="@drawable/ic_launcher_background"
-        android:title="Spare" />
-    <item
-        android:id="@+id/destination_profile"
-        android:icon="@drawable/ic_launcher_background"
-        android:title="Profile" />
+        app:showAsAction="ifRoom"
+        android:title="About" />
 </menu>
