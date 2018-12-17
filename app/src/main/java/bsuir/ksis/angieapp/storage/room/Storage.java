@@ -14,17 +14,17 @@ public class Storage implements IStorage {
     }
 
     @Override
-    public Boolean createUser(User user) {
-        if (appDatabase.userDao().getAuthenticatedUserByLogin(user.login) != null) return false;
+    public User createUser(User user) {
+        if (appDatabase.userDao().getAuthenticatedUserByLogin(user.login) != null) return null;
 
         appDatabase.userDao().saveUser(user);
 
         User newUser = appDatabase.userDao().getAuthenticatedUserByLogin(user.login);
-        if (newUser == null) return false;
+        if (newUser == null) return null;
         Profile profile = new Profile();
         profile.id = newUser.id;
         appDatabase.profileDao().saveProfile(profile);
-        return true;
+        return newUser;
     }
 
     @Override

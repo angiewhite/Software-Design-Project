@@ -1,13 +1,18 @@
 package bsuir.ksis.angieapp;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import android.os.Bundle;
@@ -17,20 +22,35 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.ui.NavigationUI;
+import bsuir.ksis.angieapp.interfaces.IProfileManager;
+import bsuir.ksis.angieapp.services.ProfileService;
+import bsuir.ksis.angieapp.storage.IStorage;
+import bsuir.ksis.angieapp.storage.room.AppDatabase;
+import bsuir.ksis.angieapp.storage.room.Storage;
+import bsuir.ksis.angieapp.storage.room.entities.Profile;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements IProfileManager {
 
-    private static final int REQUEST_READ_PHONE_STATE = 78;
+    public static final int REQUEST_READ_PHONE_STATE = 1;
+    public static final int REQUEST_PERMISSION_EXTERNAL_STORAGE = 2;
+    public static final int REQUEST_OPEN_GALLERY = 3;
+    public static final int REQUEST_PERMISSION_CAMERA = 4;
+    public static final int REQUEST_OPEN_CAMERA = 5;
 
-    private boolean wasStopped = false;
+    IStorage storage;
+    ProfileService service;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        storage = new Storage(AppDatabase.getDatabase(this));
+        service = new ProfileService(this, storage);
 
         NavController navController = Navigation.findNavController(this, R.id.fragment);
 
@@ -54,14 +74,6 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_toolbar, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        NavController navController = Navigation.findNavController(this, R.id.fragment);
-        boolean navigated = NavigationUI.onNavDestinationSelected(item, navController);
-        return navigated || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -102,6 +114,125 @@ public class HomeActivity extends AppCompatActivity {
                 }
                 break;
             }
+            case HomeActivity.REQUEST_PERMISSION_EXTERNAL_STORAGE: {
+                //Open the gallery
+                if ((grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    service.getImageFromGallery();
+                }
+                //Show the explanation for the permission if it was denied
+                else if ((grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_DENIED)) {
+                    showPermissionExplanation(Manifest.permission.READ_EXTERNAL_STORAGE,
+                            getString(R.string.read_external_storage_permission_explanation),
+                            HomeActivity.REQUEST_PERMISSION_EXTERNAL_STORAGE);
+                }
+            }
+            case HomeActivity.REQUEST_PERMISSION_CAMERA: {
+                //Open the gallery
+                if ((grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    service.getImageFromCamera();
+                }
+                //Show the explanation for the permission if it was denied
+                else if ((grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_DENIED)) {
+                    showPermissionExplanation(Manifest.permission.CAMERA,
+                            getString(R.string.camera_permission_explanation),
+                            HomeActivity.REQUEST_PERMISSION_CAMERA);
+                }
+            }
         }
+    }
+
+    public void showPermissionExplanation (final String permission, String explanation,
+                                            final int permissionRequestCode) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                permission)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            String dialogQuestion = getString(R.string.permission_explanation_dialog_question);
+            builder.setMessage("$explanation $dialogQuestion")
+                    .setTitle(R.string.permission_explanation_dialog_title);
+
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            })
+            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    ActivityCompat.requestPermissions(HomeActivity.this,
+                            new String[]{permission}, permissionRequestCode);
+                }
+            });
+
+            builder.show();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+//        if (item.getItemId() == R.id.sign_out) {
+//            signOut();
+//            return true;
+//        }
+
+        NavController navController = Navigation.findNavController(this, R.id.fragment);
+        boolean navigated = NavigationUI.onNavDestinationSelected(item, navController);
+        return navigated || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != Activity.RESULT_OK || data == null) return;
+        switch (requestCode) {
+            case HomeActivity.REQUEST_OPEN_GALLERY : {
+                Uri selectedImage = (Uri)data.getExtras().get("data");
+                if (selectedImage == null) return;
+
+                service.updatePhoto(selectedImage);
+            }
+            case HomeActivity.REQUEST_OPEN_CAMERA : {
+                service.updatePhoto(null);
+            }
+    }
+    }
+
+    private void signOut() {
+        SharedPreferences preferences = getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove(getString(R.string.current_user));
+        editor.apply();
+        //startActivity(Intent(this, AuthenticationActivity::class.java))
+    }
+
+    @Override
+    public Profile getProfileInfo() {
+        return service.getProfile();
+    }
+
+    @Override
+    public void saveProfileInfo(Profile profile) {
+        service.saveProfileInfo(profile);
+    }
+
+    @Override
+    public void uploadPhoto() {
+        service.uploadPhoto();
+    }
+
+    @Override
+    public Boolean getChangeMode() {
+        return null;
+    }
+
+    @Override
+    public void setChangeMode(Boolean isChangeMode) {
+
     }
 }

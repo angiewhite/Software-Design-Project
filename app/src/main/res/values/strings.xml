@@ -13,6 +13,16 @@
     <string name="phone_title">Phone:</string>
     <string name="email_title">Email:</string>
 
+    <string name="current_user">login</string>
+
+    <string name="read_external_storage_permission_explanation">The permission is needed to
+        upload photo from the gallery.</string>
+    <string name="camera_permission_explanation">The permission is needed to
+        take a photo to upload.</string>
+    <string name="permission_explanation_dialog_question">Are you sure you don\'t want to
+        give the permission?</string>
+    <string name="permission_explanation_dialog_title">The permission explanation</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
