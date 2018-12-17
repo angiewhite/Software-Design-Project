@@ -14,9 +14,11 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.BitSet;
 import java.util.Date;
@@ -149,10 +151,18 @@ public class ProfileService {
         if (!file.exists()) return BitmapFactory.decodeResource(activity.getResources(),
                 R.drawable.user_profile);
 
-        return BitmapFactory.decodeFile(filePath);
+        return BitmapFactory.decodeFile(file.getAbsolutePath());
     }
 
     public void updatePhoto(Uri photoPath) {
+//        try
+//        {
+//            final InputStream imageStream = activity.getContentResolver().openInputStream(photoPath);
+//            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+//            ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(selectedImage);
+//        }
+//        catch (Exception e) {
+//        }
         String path = photoPath == null ? takenPhotoPath : getPhotoPath(photoPath);
         SharedPreferences preferences = activity.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
         int current_user_id = preferences.getInt(activity.getResources().getString(R.string.current_user),-1);

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -25,12 +24,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.util.List;
 
+// alert fialog warning
+// edit mode turn off when switching
+// saving imaqge after confirmation
+// hash
 
 public class ProfileFragment extends Fragment {
 
-    Boolean isChangeable = false;
+    static Boolean isChangeable = false;
     IProfileManager profileManager;
 
     EditText[] editViews;
@@ -49,21 +51,6 @@ public class ProfileFragment extends Fragment {
 
         profileManager = (IProfileManager) context;
 
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (isChangeable) {
-            Profile profile = new Profile(((EditText)getActivity().findViewById(R.id.surnameEditView)).getText().toString(),
-                    ((EditText)getActivity().findViewById(R.id.nameEditView)).getText().toString(),
-                    ((EditText)getActivity().findViewById(R.id.emailEditView)).getText().toString(),
-                    ((EditText)getActivity().findViewById(R.id.phoneEditView)).getText().toString());
-            saveProfile(profile);
-        }
-
-        //change mode
     }
 
     @Override
@@ -91,6 +78,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View view) {
                 if (isChangeable) {
                     profileManager.uploadPhoto();
+                    displayProfile(profileManager.getProfileInfo());
                 }
             }
         });
@@ -175,11 +163,15 @@ public class ProfileFragment extends Fragment {
             preferences.edit().putInt(getActivity().getString(R.string.current_user), user.id).apply();
         }
         profile.id = userId;
+        Profile oldProfile = profileManager.getProfileInfo();
+        profile.imagePath = oldProfile.imagePath;
         profileManager.saveProfileInfo(profile);
         displayProfile(profile);
     }
 
     private void displayProfile(Profile newProfile) {
+        if (newProfile == null) return;
+
         Activity activity = getActivity();
         ((TextView)activity.findViewById(R.id.nameTextView)).setText(newProfile.name);
         ((TextView)activity.findViewById(R.id.surnameTextView)).setText(newProfile.surname);

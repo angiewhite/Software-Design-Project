@@ -189,16 +189,18 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode != Activity.RESULT_OK || data == null) return;
+        if (resultCode != Activity.RESULT_OK) return;
         switch (requestCode) {
             case HomeActivity.REQUEST_OPEN_GALLERY : {
-                Uri selectedImage = (Uri)data.getExtras().get("data");
+                if (data == null) return;
+                Uri selectedImage = (Uri)data.getData();
                 if (selectedImage == null) return;
-
                 service.updatePhoto(selectedImage);
+                break;
             }
             case HomeActivity.REQUEST_OPEN_CAMERA : {
                 service.updatePhoto(null);
+                break;
             }
     }
     }
