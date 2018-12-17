@@ -47,8 +47,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupActionBar(NavController navController)
     {
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout);
+        NavigationUI.setupActionBarWithNavController(this, navController);
     }
 
     @Override
@@ -68,8 +67,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.fragment);
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        return NavigationUI.navigateUp(navController, drawerLayout);
+        return navController.navigateUp();
     }
 
     private void openSettingsForPhoneStatePermission(){

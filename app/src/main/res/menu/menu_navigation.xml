@@ -10,6 +10,6 @@
         android:title="Profile" />
     <item
         android:id="@+id/destination_spare"
-        android:icon="@drawable/ic_more_vert_black_24dp"
-        android:title="Spare" />
+        android:icon="@drawable/ic_help"
+        android:title="Help" />
 </menu>
