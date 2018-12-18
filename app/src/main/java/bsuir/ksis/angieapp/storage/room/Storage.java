@@ -3,6 +3,7 @@ package bsuir.ksis.angieapp.storage.room;
 import bsuir.ksis.angieapp.storage.IStorage;
 import bsuir.ksis.angieapp.storage.room.entities.Profile;
 import bsuir.ksis.angieapp.storage.room.entities.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class Storage implements IStorage {
 
@@ -17,6 +18,7 @@ public class Storage implements IStorage {
     public User createUser(User user) {
         if (appDatabase.userDao().getAuthenticatedUserByLogin(user.login) != null) return null;
 
+        user.password = BCrypt.hashpw(user.password, BCrypt.gensalt());
         appDatabase.userDao().saveUser(user);
 
         User newUser = appDatabase.userDao().getAuthenticatedUserByLogin(user.login);
@@ -33,11 +35,16 @@ public class Storage implements IStorage {
     }
 
     @Override
+    public User getUser(int id) {
+        return appDatabase.userDao().getCurrentUser(id);
+    }
+
+    @Override
     public Boolean authenticateUser(String login, String password) {
         User user = appDatabase.userDao().getAuthenticatedUserByLogin(login);
         if (user == null) return false;
 
-        return password.equals(user.password);
+        return BCrypt.checkpw(password, user.password);
     }
 
     @Override

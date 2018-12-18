@@ -10,7 +10,7 @@ import bsuir.ksis.angieapp.storage.room.dao.UserDao;
 import bsuir.ksis.angieapp.storage.room.entities.Profile;
 import bsuir.ksis.angieapp.storage.room.entities.User;
 
-@Database(entities = { User.class, Profile.class }, version = 1)
+@Database(entities = { User.class, Profile.class }, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract UserDao userDao();
     public abstract ProfileDao profileDao();

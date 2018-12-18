@@ -46,6 +46,8 @@ public class AuthenticationActivity extends AppCompatActivity implements ISignUp
 
         AppDatabase db = AppDatabase.getDatabase(this);
         storage = new Storage(db);
+
+        checkIfSignedIn();
     }
 
     private void setupActionBar() {
@@ -123,5 +125,18 @@ public class AuthenticationActivity extends AppCompatActivity implements ISignUp
         if (user != null)
             Navigation.findNavController(this, R.id.auth_activity_fragment).navigate(R.id.destination_sign_in);
         return user != null;
+    }
+
+    private void checkIfSignedIn()
+    {
+        SharedPreferences preferences = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
+        int currentUserId = preferences.getInt(getString(R.string.current_user), -1);
+        if (currentUserId == -1) return;
+        User user = storage.getUser(currentUserId);
+        if (user == null) {
+            preferences.edit().remove(getString(R.string.current_user)).apply();
+            return;
+        }
+        signIn(user.login, user.password);
     }
 }
