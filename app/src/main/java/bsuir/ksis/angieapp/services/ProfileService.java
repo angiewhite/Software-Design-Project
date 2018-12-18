@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import bsuir.ksis.angieapp.BuildConfig;
 import bsuir.ksis.angieapp.HomeActivity;
+import bsuir.ksis.angieapp.ProfileFragment;
 import bsuir.ksis.angieapp.R;
 import bsuir.ksis.angieapp.storage.IStorage;
 import bsuir.ksis.angieapp.storage.room.entities.Profile;
@@ -134,14 +135,6 @@ public class ProfileService {
         storage.saveProfile(profile);
     }
 
-    public Boolean getChangeMode() {
-        return true || false;
-    }
-
-    public void setChangeMode(Boolean isChangeMode) {
-        // set change mode
-    }
-
     private Bitmap getBitmap(String filePath) {
         File file = new File(filePath);
 
@@ -152,19 +145,13 @@ public class ProfileService {
     }
 
     public void updatePhoto(Uri photoPath) {
-//        try
-//        {
-//            final InputStream imageStream = activity.getContentResolver().openInputStream(photoPath);
-//            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-//            ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(selectedImage);
-//        }
-//        catch (Exception e) {
-//        }
         String path = photoPath == null ? takenPhotoPath : getPhotoPath(photoPath);
-        SharedPreferences preferences = activity.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
-        int current_user_id = preferences.getInt(activity.getResources().getString(R.string.current_user),-1);
-        storage.savePhoto(current_user_id, path);
-        ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(path));
+//        SharedPreferences preferences = activity.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
+//        int current_user_id = preferences.getInt(activity.getResources().getString(R.string.current_user),-1);
+//        storage.savePhoto(current_user_id, path);
+        Bitmap selectedImage = getBitmap(path);
+        if (selectedImage != null) ProfileFragment.setSelectedImage(path);
+        ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(selectedImage);
     }
 
     private String getPhotoPath(Uri uri) {

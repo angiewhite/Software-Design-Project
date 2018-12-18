@@ -28,10 +28,21 @@ import java.io.File;
 public class ProfileFragment extends Fragment {
 
     static Boolean isChangeable = false;
+    static String selectedImagePath;
+
     IProfileManager profileManager;
 
     EditText[] editViews;
     TextView[] textViews;
+
+    public static Boolean getIsChangeable() {
+        return isChangeable;
+    }
+
+    public static void setSelectedImage(String path)
+    {
+        selectedImagePath = path;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,7 +64,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Profile profile = profileManager.getProfileInfo();
-        if (profile != null) displayProfile(profile);
+        displayProfile(profile);
 
         Activity activity = getActivity();
 
@@ -73,7 +84,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View view) {
                 if (isChangeable) {
                     profileManager.uploadPhoto();
-                    displayProfile(profileManager.getProfileInfo());
+                    //displayProfile(profileManager.getProfileInfo());
                 }
             }
         });
@@ -142,6 +153,11 @@ public class ProfileFragment extends Fragment {
                 ((EditText)getActivity().findViewById(R.id.emailEditView)).getText().toString(),
                 ((EditText)getActivity().findViewById(R.id.phoneEditView)).getText().toString());
 
+        if (selectedImagePath != null) {
+            profile.imagePath = selectedImagePath;
+            selectedImagePath = null;
+        }
+
         saveProfile(profile);
     }
 
@@ -149,17 +165,18 @@ public class ProfileFragment extends Fragment {
         SharedPreferences preferences = getActivity().getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
         int userId = preferences.getInt(getString(R.string.current_user), -1);
         if (userId == -1) {
-            User user = new User();
-            user.login = profile.name;
-            user.password = "default";
-            Storage storage = new Storage(AppDatabase.getDatabase(getContext()));
-            user = storage.createUser(user);
-            userId = user.id;
-            preferences.edit().putInt(getActivity().getString(R.string.current_user), user.id).apply();
+//            User user = new User();
+//            user.login = profile.name;
+//            user.password = "default";
+//            Storage storage = new Storage(AppDatabase.getDatabase(getContext()));
+//            user = storage.createUser(user);
+//            userId = user.id;
+//            preferences.edit().putInt(getActivity().getString(R.string.current_user), user.id).apply();
+            return;
         }
         profile.id = userId;
-        Profile oldProfile = profileManager.getProfileInfo();
-        profile.imagePath = oldProfile.imagePath;
+//        Profile oldProfile = profileManager.getProfileInfo();
+//        profile.imagePath = oldProfile.imagePath;
         profileManager.saveProfileInfo(profile);
         displayProfile(profile);
     }
@@ -178,8 +195,15 @@ public class ProfileFragment extends Fragment {
         ((EditText)activity.findViewById(R.id.phoneEditView)).setText(newProfile.phone, TextView.BufferType.EDITABLE);
         ((EditText)activity.findViewById(R.id.emailEditView)).setText(newProfile.email, TextView.BufferType.EDITABLE);
 
-        if (newProfile.imagePath != null)
-        ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(newProfile.imagePath));
+
+        if (isChangeable) {
+            if (selectedImagePath != null) ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(selectedImagePath));
+            else if (newProfile.imagePath != null) ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(selectedImagePath));
+        } else if (!isChangeable && newProfile.imagePath != null) {
+            ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(newProfile.imagePath));
+        }
+//        if (newProfile.imagePath != null)
+//        ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(newProfile.imagePath));
 
     }
 
