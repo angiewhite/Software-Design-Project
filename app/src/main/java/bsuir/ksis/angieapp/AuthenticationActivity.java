@@ -109,11 +109,8 @@ public class AuthenticationActivity extends AppCompatActivity implements ISignUp
     @Override
     public boolean signIn(String login, String password) {
         boolean isAuthenticated = storage.authenticateUser(login, password);
-        if (isAuthenticated)
-        {
-            User user = storage.getUser(login);
-            this.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE).edit().putInt(getString(R.string.current_user), user.id).apply();
-            startActivity(new Intent(this, HomeActivity.class));
+        if (isAuthenticated) {
+            login(login);
         }
         return isAuthenticated;
     }
@@ -137,6 +134,12 @@ public class AuthenticationActivity extends AppCompatActivity implements ISignUp
             preferences.edit().remove(getString(R.string.current_user)).apply();
             return;
         }
-        signIn(user.login, user.password);
+        login(user.login);
+    }
+
+    private void login(String login) {
+        User user = storage.getUser(login);
+        this.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE).edit().putInt(getString(R.string.current_user), user.id).apply();
+        startActivity(new Intent(this, HomeActivity.class));
     }
 }
