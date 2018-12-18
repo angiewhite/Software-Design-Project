@@ -146,9 +146,6 @@ public class ProfileService {
 
     public void updatePhoto(Uri photoPath) {
         String path = photoPath == null ? takenPhotoPath : getPhotoPath(photoPath);
-//        SharedPreferences preferences = activity.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
-//        int current_user_id = preferences.getInt(activity.getResources().getString(R.string.current_user),-1);
-//        storage.savePhoto(current_user_id, path);
         Bitmap selectedImage = getBitmap(path);
         if (selectedImage != null) ProfileFragment.setSelectedImage(path);
         ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(selectedImage);

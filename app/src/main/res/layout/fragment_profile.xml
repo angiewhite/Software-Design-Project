@@ -163,7 +163,18 @@
                     android:layout_column="1"
                     android:inputType="textEmailAddress"/>
             </TableRow>
+
+            <TableRow android:gravity="center">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text="Cancel"
+                    android:id="@+id/cancelButton"/>
+            </TableRow>
         </TableLayout>
+
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -2,6 +2,7 @@ package bsuir.ksis.angieapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,10 +11,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import bsuir.ksis.angieapp.interfaces.IProfileManager;
-import bsuir.ksis.angieapp.storage.room.AppDatabase;
-import bsuir.ksis.angieapp.storage.room.Storage;
 import bsuir.ksis.angieapp.storage.room.entities.Profile;
-import bsuir.ksis.angieapp.storage.room.entities.User;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,7 +82,6 @@ public class ProfileFragment extends Fragment {
             public void onClick(View view) {
                 if (isChangeable) {
                     profileManager.uploadPhoto();
-                    //displayProfile(profileManager.getProfileInfo());
                 }
             }
         });
@@ -99,6 +96,16 @@ public class ProfileFragment extends Fragment {
                     isChangeable = true;
                 } else {
                     saveProfilePressed();
+                    isChangeable = false;
+                }
+            }
+        });
+
+        getActivity().findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isChangeable) {
+                    cancelChangesPressed();
                     isChangeable = false;
                 }
             }
@@ -134,6 +141,8 @@ public class ProfileFragment extends Fragment {
         for (TextView textView : textViews)
             textView.setVisibility(View.GONE);
 
+        getActivity().findViewById(R.id.cancelButton).setVisibility(View.VISIBLE);
+
         getActivity().findViewById(R.id.profilePhotoEditImage).setVisibility(View.VISIBLE);
         ((ImageView)getActivity().findViewById(R.id.changeProfileButton)).setImageResource(R.drawable.ic_done);
     }
@@ -144,6 +153,8 @@ public class ProfileFragment extends Fragment {
 
         for (TextView textView : textViews)
             textView.setVisibility(View.VISIBLE);
+
+        getActivity().findViewById(R.id.cancelButton).setVisibility(View.GONE);
 
         getActivity().findViewById(R.id.profilePhotoEditImage).setVisibility(View.INVISIBLE);
         ((ImageView)getActivity().findViewById(R.id.changeProfileButton)).setImageResource(R.drawable.ic_edit);
@@ -161,49 +172,53 @@ public class ProfileFragment extends Fragment {
         saveProfile(profile);
     }
 
+    private void cancelChangesPressed() {
+        displayProfile(profileManager.getProfileInfo());
+        for (EditText editView : editViews)
+            editView.setVisibility(View.GONE);
+
+        for (TextView textView : textViews)
+            textView.setVisibility(View.VISIBLE);
+
+        getActivity().findViewById(R.id.cancelButton).setVisibility(View.GONE);
+
+        getActivity().findViewById(R.id.profilePhotoEditImage).setVisibility(View.INVISIBLE);
+        ((ImageView)getActivity().findViewById(R.id.changeProfileButton)).setImageResource(R.drawable.ic_edit);
+    }
+
     private void saveProfile(Profile profile) {
         SharedPreferences preferences = getActivity().getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
         int userId = preferences.getInt(getString(R.string.current_user), -1);
         if (userId == -1) {
-//            User user = new User();
-//            user.login = profile.name;
-//            user.password = "default";
-//            Storage storage = new Storage(AppDatabase.getDatabase(getContext()));
-//            user = storage.createUser(user);
-//            userId = user.id;
-//            preferences.edit().putInt(getActivity().getString(R.string.current_user), user.id).apply();
+            getActivity().startActivity(new Intent(getActivity(), AuthenticationActivity.class));
             return;
         }
         profile.id = userId;
-//        Profile oldProfile = profileManager.getProfileInfo();
-//        profile.imagePath = oldProfile.imagePath;
         profileManager.saveProfileInfo(profile);
         displayProfile(profile);
     }
 
-    private void displayProfile(Profile newProfile) {
-        if (newProfile == null) return;
+    private void displayProfile(Profile profile) {
+        if (profile == null) return;
 
         Activity activity = getActivity();
-        ((TextView)activity.findViewById(R.id.nameTextView)).setText(newProfile.name);
-        ((TextView)activity.findViewById(R.id.surnameTextView)).setText(newProfile.surname);
-        ((TextView)activity.findViewById(R.id.phoneTextView)).setText(newProfile.phone);
-        ((TextView)activity.findViewById(R.id.emailTextView)).setText(newProfile.email);
+        ((TextView)activity.findViewById(R.id.nameTextView)).setText(profile.name);
+        ((TextView)activity.findViewById(R.id.surnameTextView)).setText(profile.surname);
+        ((TextView)activity.findViewById(R.id.phoneTextView)).setText(profile.phone);
+        ((TextView)activity.findViewById(R.id.emailTextView)).setText(profile.email);
 
-        ((EditText)activity.findViewById(R.id.nameEditView)).setText(newProfile.name, TextView.BufferType.EDITABLE);
-        ((EditText)activity.findViewById(R.id.surnameEditView)).setText(newProfile.surname, TextView.BufferType.EDITABLE);
-        ((EditText)activity.findViewById(R.id.phoneEditView)).setText(newProfile.phone, TextView.BufferType.EDITABLE);
-        ((EditText)activity.findViewById(R.id.emailEditView)).setText(newProfile.email, TextView.BufferType.EDITABLE);
+        ((EditText)activity.findViewById(R.id.nameEditView)).setText(profile.name, TextView.BufferType.EDITABLE);
+        ((EditText)activity.findViewById(R.id.surnameEditView)).setText(profile.surname, TextView.BufferType.EDITABLE);
+        ((EditText)activity.findViewById(R.id.phoneEditView)).setText(profile.phone, TextView.BufferType.EDITABLE);
+        ((EditText)activity.findViewById(R.id.emailEditView)).setText(profile.email, TextView.BufferType.EDITABLE);
 
 
         if (isChangeable) {
             if (selectedImagePath != null) ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(selectedImagePath));
-            else if (newProfile.imagePath != null) ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(selectedImagePath));
-        } else if (!isChangeable && newProfile.imagePath != null) {
-            ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(newProfile.imagePath));
+            else if (profile.imagePath != null) ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(profile.imagePath));
+        } else if (!isChangeable && profile.imagePath != null) {
+            ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(profile.imagePath));
         }
-//        if (newProfile.imagePath != null)
-//        ((ImageView)activity.findViewById(R.id.profilePhoto)).setImageBitmap(getBitmap(newProfile.imagePath));
 
     }
 

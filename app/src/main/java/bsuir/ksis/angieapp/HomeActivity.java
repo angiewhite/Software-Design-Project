@@ -10,15 +10,20 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.ui.NavigationUI;
@@ -52,17 +57,61 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
         storage = new Storage(AppDatabase.getDatabase(this));
         service = new ProfileService(this, storage);
 
-        NavController navController = Navigation.findNavController(this, R.id.fragment);
+        final NavController navController = Navigation.findNavController(this, R.id.fragment);
 
         setupBottomNavMenu(navController);
         setupActionBar(navController);
+
     }
 
-    private void setupBottomNavMenu(NavController navController)
+    private void setupBottomNavMenu(final NavController navController)
     {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
         if (bottomNavigationView == null) return;
+        bottomNavigationView.setOnNavigationItemReselectedListener(new BottomNavigationView.OnNavigationItemReselectedListener() {
+            @Override
+            public void onNavigationItemReselected(@NonNull MenuItem item) {
+
+            }
+        });
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+                if (item.getItemId() != R.id.destination_profile && ProfileFragment.getIsChangeable()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+                    builder.setMessage("If you leave now you will lose all the changes. Which would you prefer to do?")
+                            .setTitle("Leaving a page in edit mode.");
+
+                    builder.setPositiveButton("Leave and save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            findViewById(R.id.changeProfileButton).performClick();
+                            navController.navigate(item.getItemId());
+                        }
+                    })
+                    .setNeutralButton("Leave without saving", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            findViewById(R.id.cancelButton).performClick();
+                            navController.navigate(item.getItemId());
+                        }
+                    })
+                    .setNegativeButton("Stay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+
+                    builder.show();
+                } else {
+                    navController.navigate(item.getItemId());
+                }
+
+                return false;
+            }
+        });
     }
 
     private void setupActionBar(NavController navController)
