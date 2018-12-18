@@ -28,6 +28,11 @@ public class Storage implements IStorage {
     }
 
     @Override
+    public User getUser(String login) {
+        return appDatabase.userDao().getAuthenticatedUserByLogin(login);
+    }
+
+    @Override
     public Boolean authenticateUser(String login, String password) {
         User user = appDatabase.userDao().getAuthenticatedUserByLogin(login);
         if (user == null) return false;

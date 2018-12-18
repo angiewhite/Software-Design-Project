@@ -25,11 +25,6 @@ import android.widget.TextView;
 
 import java.io.File;
 
-// alert fialog warning
-// edit mode turn off when switching
-// saving imaqge after confirmation
-// hash
-
 public class ProfileFragment extends Fragment {
 
     static Boolean isChangeable = false;
@@ -112,7 +107,7 @@ public class ProfileFragment extends Fragment {
 
                 int keypadHeight = screenHeight - r.bottom;
 
-                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine button height.
                     activity.findViewById(R.id.changeProfileButton).setVisibility(View.GONE);
                 } else {
                     activity.findViewById(R.id.changeProfileButton).setVisibility(View.VISIBLE);

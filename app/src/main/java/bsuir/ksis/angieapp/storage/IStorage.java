@@ -7,6 +7,7 @@ public interface IStorage {
     User createUser(User user);
 
     Boolean authenticateUser(String login, String password);
+    User getUser(String login);
 
     void saveProfile(Profile profile);
     Profile getProfile(int id);

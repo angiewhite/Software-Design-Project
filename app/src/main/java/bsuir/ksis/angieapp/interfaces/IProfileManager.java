@@ -9,8 +9,4 @@ public interface IProfileManager {
     void saveProfileInfo(Profile profile);
 
     void uploadPhoto();
-
-    Boolean getChangeMode();
-
-    void setChangeMode(Boolean isChangeMode);
 }

@@ -110,3 +110,5 @@ task printVersion() << {
     println("Version Name: $getVersionName")
     println("Version Code: $getVersionCode")
 }
+
+//adb -s 254a48a49a0d7ece shell am start -W -a android.intent.action.VIEW -d "sdapp://bsuir.ksis.angieapp/page/4" bsuir.ksis.angieapp

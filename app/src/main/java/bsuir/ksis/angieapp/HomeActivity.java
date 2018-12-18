@@ -127,6 +127,7 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
                             getString(R.string.read_external_storage_permission_explanation),
                             HomeActivity.REQUEST_PERMISSION_EXTERNAL_STORAGE);
                 }
+                break;
             }
             case HomeActivity.REQUEST_PERMISSION_CAMERA: {
                 //Open the gallery
@@ -141,6 +142,7 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
                             getString(R.string.camera_permission_explanation),
                             HomeActivity.REQUEST_PERMISSION_CAMERA);
                 }
+                break;
             }
         }
     }
@@ -151,7 +153,7 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
                 permission)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             String dialogQuestion = getString(R.string.permission_explanation_dialog_question);
-            builder.setMessage("$explanation $dialogQuestion")
+            builder.setMessage(String.format("%s %s", explanation, dialogQuestion))
                     .setTitle(R.string.permission_explanation_dialog_title);
 
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -174,10 +176,10 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == R.id.sign_out) {
-//            signOut();
-//            return true;
-//        }
+        if (item.getItemId() == R.id.sign_out) {
+            signOut();
+            return true;
+        }
 
         NavController navController = Navigation.findNavController(this, R.id.fragment);
         boolean navigated = NavigationUI.onNavDestinationSelected(item, navController);
@@ -210,7 +212,7 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(getString(R.string.current_user));
         editor.apply();
-        //startActivity(Intent(this, AuthenticationActivity::class.java))
+        startActivity(new Intent(this, AuthenticationActivity.class));
     }
 
     @Override
@@ -226,15 +228,5 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
     @Override
     public void uploadPhoto() {
         service.uploadPhoto();
-    }
-
-    @Override
-    public Boolean getChangeMode() {
-        return null;
-    }
-
-    @Override
-    public void setChangeMode(Boolean isChangeMode) {
-
     }
 }
