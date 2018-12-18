@@ -127,7 +127,36 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.fragment);
+        final NavController navController = Navigation.findNavController(this, R.id.fragment);
+        if (navController.getCurrentDestination().getId() == R.id.destination_profile) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+            builder.setMessage("If you leave now you will lose all the changes. Which would you prefer to do?")
+                    .setTitle("Leaving a page in edit mode.");
+
+            builder.setPositiveButton("Leave and save", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    findViewById(R.id.changeProfileButton).performClick();
+                    navController.navigateUp();
+                }
+            })
+            .setNeutralButton("Leave without saving", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    findViewById(R.id.cancelButton).performClick();
+                    navController.navigateUp();
+                }
+            })
+            .setNegativeButton("Stay", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+
+            builder.show();
+            return false;
+        }
         return navController.navigateUp();
     }
 
