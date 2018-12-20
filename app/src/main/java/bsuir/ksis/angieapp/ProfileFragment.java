@@ -107,6 +107,7 @@ public class ProfileFragment extends Fragment {
                 if (isChangeable) {
                     cancelChangesPressed();
                     isChangeable = false;
+
                 }
             }
         });

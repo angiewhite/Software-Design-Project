@@ -96,6 +96,9 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
     testImplementation 'junit:junit:4.12'
@@ -104,6 +107,8 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha01'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 
@@ -113,3 +118,4 @@ task printVersion() << {
 }
 
 //adb -s 254a48a49a0d7ece shell am start -W -a android.intent.action.VIEW -d "sdapp://bsuir.ksis.angieapp/page/4" bsuir.ksis.angieapp
+

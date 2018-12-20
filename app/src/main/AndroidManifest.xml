@@ -1,10 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 package="bsuir.ksis.angieapp">
 
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT" />
 <uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.INTERNET" />
 
 <application
     android:allowBackup="true"
@@ -15,7 +18,8 @@ package="bsuir.ksis.angieapp">
     android:theme="@style/AppTheme">
     <activity
         android:name=".HomeActivity"
-        android:screenOrientation="${orientationPreference}">
+        android:screenOrientation="${orientationPreference}"
+        android:windowSoftInputMode="adjustPan">
         <nav-graph android:value="@navigation/nav_graph" />
 
         <intent-filter>
@@ -31,6 +35,12 @@ package="bsuir.ksis.angieapp">
             <action android:name="android.intent.action.VIEW" />
         </intent-filter>
     </activity>
+    <activity
+        android:name=".RssWebView"
+        android:configChanges="orientation|keyboardHidden|screenSize"
+        android:label="Rss Web View"
+        android:theme="@style/FullscreenTheme"/>
+
     <provider
         android:name="androidx.core.content.FileProvider"
         android:authorities="com.example.android.fileprovider"

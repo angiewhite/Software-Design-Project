@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -44,6 +46,7 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
     public static final int REQUEST_OPEN_GALLERY = 3;
     public static final int REQUEST_PERMISSION_CAMERA = 4;
     public static final int REQUEST_OPEN_CAMERA = 5;
+
 
     IStorage storage;
     ProfileService service;
@@ -129,6 +132,7 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
     public boolean onSupportNavigateUp() {
         final NavController navController = Navigation.findNavController(this, R.id.fragment);
         if (navController.getCurrentDestination().getId() == R.id.destination_profile) {
+
             AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
             builder.setMessage("If you leave now you will lose all the changes. Which would you prefer to do?")
                     .setTitle("Leaving a page in edit mode.");
@@ -137,6 +141,8 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     findViewById(R.id.changeProfileButton).performClick();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                     navController.navigateUp();
                 }
             })
@@ -144,6 +150,8 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     findViewById(R.id.cancelButton).performClick();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                     navController.navigateUp();
                 }
             })
