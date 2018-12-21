@@ -131,7 +131,7 @@ public class HomeActivity extends AppCompatActivity implements IProfileManager {
     @Override
     public boolean onSupportNavigateUp() {
         final NavController navController = Navigation.findNavController(this, R.id.fragment);
-        if (navController.getCurrentDestination().getId() == R.id.destination_profile) {
+        if (navController.getCurrentDestination().getId() == R.id.destination_profile && ProfileFragment.getIsChangeable()) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
             builder.setMessage("If you leave now you will lose all the changes. Which would you prefer to do?")

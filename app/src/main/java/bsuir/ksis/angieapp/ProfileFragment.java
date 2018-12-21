@@ -25,8 +25,8 @@ import java.io.File;
 
 public class ProfileFragment extends Fragment {
 
-    static Boolean isChangeable = false;
-    static String selectedImagePath;
+    private static Boolean isChangeable = false;
+    private static String selectedImagePath;
 
     IProfileManager profileManager;
 

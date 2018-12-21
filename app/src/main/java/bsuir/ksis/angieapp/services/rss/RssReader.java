@@ -1,11 +1,7 @@
 package bsuir.ksis.angieapp.services.rss;
 
 import android.os.AsyncTask;
-
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.media.Image;
-import android.service.autofill.FieldClassification;
 
 import bsuir.ksis.angieapp.interfaces.OnProgressListener;
 
@@ -170,11 +166,9 @@ public class RssReader extends AsyncTask<Void, Void, Void> {
                         feedItem.setThumbnailUrl(url);
                     }else if (node.getNodeName().equalsIgnoreCase("description")) {
                         String content = node.getTextContent();
-                        Pattern pattern = Pattern.compile("img\\s*src=(\\\".*?\\\")");
-                        Matcher matcher = pattern.matcher(content);
-                        if (matcher.matches()) {
-                            String str = matcher.toMatchResult().group();
-                        }
+                        //content = content.replaceAll("&[^;]*;", "");
+                        String regex = "<[^>]*>";
+                        content = content.replaceAll(regex, "");
                         feedItem.setDescription(content);
                     }
                 }

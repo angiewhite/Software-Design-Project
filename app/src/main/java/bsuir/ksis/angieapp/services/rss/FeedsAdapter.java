@@ -1,6 +1,7 @@
 package bsuir.ksis.angieapp.services.rss;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,8 +48,8 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull FeedsAdapter.MyViewHolder holder, int position) {
         FeedItem item = feedItems.get(position);
 
-        holder.Title.setText(item.getTitle());
-        holder.Description.setText(item.getDescription());
+        holder.Title.setText(Html.fromHtml(item.getTitle()));
+        holder.Description.setText(Html.fromHtml(item.getDescription()));
         holder.Date.setText(item.getPubDate());
         Glide
                 .with(context)

@@ -1,7 +1,6 @@
 package bsuir.ksis.angieapp.storage;
 
 import android.content.Context;
-import android.net.Uri;
 
 import bsuir.ksis.angieapp.services.rss.FeedItem;
 import com.google.gson.Gson;
@@ -16,8 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +84,7 @@ public class CacheRepository {
             return  cacheFile;
         }
         try {
-            //TODO: clear cache
+            // TODO: clear cache
             cacheFile.createNewFile();
         } catch (IOException e) {
             // Error while creating file

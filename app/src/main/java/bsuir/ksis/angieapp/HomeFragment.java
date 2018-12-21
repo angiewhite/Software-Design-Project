@@ -44,6 +44,7 @@ public class HomeFragment extends Fragment implements RssReader.OnFeedItemLoaded
     private RssReader rssReader;
     private ProgressDialog progressDialog;
     private boolean loadedFromCache = false;
+    private static boolean loaded = false;
     private FeedsAdapter.OnItemClickListener onItemClickListener;
 
     public HomeFragment() {
@@ -74,7 +75,7 @@ public class HomeFragment extends Fragment implements RssReader.OnFeedItemLoaded
         onItemClickListener = new FeedsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(FeedItem item) {
-                if (!loadedFromCache) {
+                if (checkInternetConnection()) {
                     Intent intent = new Intent(getContext(), RssWebView.class);
                     intent.putExtra("URL", item.getLink());
                     startActivity(intent);
@@ -104,6 +105,11 @@ public class HomeFragment extends Fragment implements RssReader.OnFeedItemLoaded
             case R.id.change_news_source:
                 showRssSourceInputDialog();
                 return true;
+            case R.id.refresh:
+                String address = getActivity().getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE).getString(getString(R.string.preference_rss_url), null);
+                if (address == null) return true;
+                loadRssFromTheInternet(address);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -112,13 +118,10 @@ public class HomeFragment extends Fragment implements RssReader.OnFeedItemLoaded
     private void doRss(String address) {
         feedsAdapter = new FeedsAdapter(getContext(), new ArrayList<FeedItem>(), onItemClickListener);
         recyclerView.setAdapter(feedsAdapter);
-        ConnectivityManager cm =
-                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnected();
-        if (isConnected) {
+        boolean isConnected = checkInternetConnection();
+
+        if (isConnected && !loaded) {
             loadRssFromTheInternet(address);
         } else {
             loadRssFromCache();
@@ -131,6 +134,7 @@ public class HomeFragment extends Fragment implements RssReader.OnFeedItemLoaded
         rssReader.addOnExecutedListener(this);
         rssReader.addOnProgressListener(this);
         rssReader.execute();
+        loaded = true;
     }
 
     private void loadRssFromCache() {
@@ -139,6 +143,15 @@ public class HomeFragment extends Fragment implements RssReader.OnFeedItemLoaded
                 String.valueOf(getActivity().getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE).getInt(getString(R.string.current_user), -1)));
         feedsAdapter.setFeedItems(items);
         Toast.makeText(getContext(), R.string.feed_loaded_from_cache, Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean checkInternetConnection() {
+        ConnectivityManager cm =
+                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnected();
     }
 
     private void askToInputNewUrl(String title) {
@@ -167,14 +180,14 @@ public class HomeFragment extends Fragment implements RssReader.OnFeedItemLoaded
     private void showRssSourceInputDialog() {
         LayoutInflater li = LayoutInflater.from(getContext());
         View dialogView = li.inflate(R.layout.rss_source_input_dialog, null);
+        final EditText sourceInput = dialogView
+                .findViewById(R.id.rssSourceEditText);
+        sourceInput.setText(getActivity().getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE).getString(getString(R.string.preference_rss_url), ""));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 getContext());
 
         builder.setView(dialogView);
-
-        final EditText sourceInput = dialogView
-                .findViewById(R.id.rssSourseInputDialog__editText);
 
         builder
                 .setCancelable(false)
@@ -183,7 +196,7 @@ public class HomeFragment extends Fragment implements RssReader.OnFeedItemLoaded
                             public void onClick(DialogInterface dialog, int id) {
                                 String url = sourceInput.getText().toString();
                                 setRssUrlPreference(url);
-                                doRss(url);
+                                loadRssFromTheInternet(url);
                             }
                         })
                 .setNegativeButton(R.string.cancel,
